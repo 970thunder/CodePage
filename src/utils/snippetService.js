@@ -1,7 +1,7 @@
 import { app } from './cloudbase.js'
+import { getCollection } from './dbInit.js'
 
 const db = app.database()
-const collection = db.collection('snippets')
 
 /**
  * 代码片段服务类
@@ -14,6 +14,8 @@ class SnippetService {
      */
     async createSnippet(snippetData) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const data = {
                 ...snippetData,
                 createdAt: new Date(),
@@ -38,6 +40,8 @@ class SnippetService {
      */
     async getSnippets(options = {}) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const {
                 page = 1,
                 pageSize = 20,
@@ -94,6 +98,8 @@ class SnippetService {
      */
     async getSnippetById(id) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.doc(id).get()
             if (result.data && result.data.length > 0) {
                 // 增加浏览次数
@@ -115,6 +121,8 @@ class SnippetService {
      */
     async updateSnippet(id, updateData) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const data = {
                 ...updateData,
                 updatedAt: new Date()
@@ -135,6 +143,8 @@ class SnippetService {
      */
     async deleteSnippet(id) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.doc(id).remove()
             return { success: true, data: result }
         } catch (error) {
@@ -150,6 +160,8 @@ class SnippetService {
      */
     async incrementViews(id) {
         try {
+            const collection = await getCollection('code_snippets')
+
             await collection.doc(id).update({
                 views: db.command.inc(1)
             })
@@ -165,6 +177,8 @@ class SnippetService {
      */
     async incrementLikes(id) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.doc(id).update({
                 likes: db.command.inc(1)
             })
@@ -181,6 +195,8 @@ class SnippetService {
      */
     async getAllTags() {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.aggregate()
                 .group({
                     _id: '$tags',
@@ -214,6 +230,8 @@ class SnippetService {
      */
     async getAllCategories() {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.aggregate()
                 .group({
                     _id: '$category',
@@ -245,6 +263,8 @@ class SnippetService {
      */
     async getAllLanguages() {
         try {
+            const collection = await getCollection('code_snippets')
+
             const result = await collection.aggregate()
                 .group({
                     _id: '$language',
@@ -278,6 +298,8 @@ class SnippetService {
      */
     async searchSnippets(keyword, options = {}) {
         try {
+            const collection = await getCollection('code_snippets')
+
             const {
                 page = 1,
                 pageSize = 20,

@@ -95,6 +95,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { autoLogin } from '../utils/cloudbase.js'
+import { initDatabase } from '../utils/dbInit.js'
 import snippetService from '../utils/snippetService.js'
 import SnippetCard from '../components/SnippetCard.vue'
 import SearchFilter from '../components/SearchFilter.vue'
@@ -181,11 +182,15 @@ const createSnippet = async () => {
             showCreateModal.value = false
             resetNewSnippet()
             loadSnippets()
+            // 显示成功消息
+            alert('代码片段创建成功！')
         } else {
             console.error('创建代码片段失败:', result.error)
+            alert(`创建失败: ${result.error}`)
         }
     } catch (error) {
         console.error('创建代码片段失败:', error)
+        alert(`创建失败: ${error.message}`)
     } finally {
         creating.value = false
     }
@@ -221,6 +226,11 @@ onMounted(async () => {
 
         if (loginResult.success) {
             loginStatus.value = `已登录 (${loginResult.loginType || '匿名用户'})`
+
+            // 初始化数据库
+            console.log('初始化数据库...')
+            await initDatabase()
+
             // 加载数据
             await Promise.all([loadSnippets(), loadMetadata()])
         } else {
